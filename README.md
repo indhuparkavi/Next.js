@@ -47,3 +47,4 @@ to db -> psql -d your_database_name
 to see table -> \l
 
 in case of peer authenication issue -> sudo -i -u postgres
+npx prisma studio

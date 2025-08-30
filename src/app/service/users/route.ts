@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { userSchema } from "./validation";
-import { error } from "console";
 
-// GET all users
 export async function GET() {
     try {
         const users = await prisma.user.findMany({
             include: { address: true }
         });
-        return NextResponse.json(users);
+        return NextResponse.json(users, { status: 200 });
     } catch (err) {
         NextResponse.json({
             error: 'Internal Server Error'
@@ -29,10 +27,10 @@ export async function POST(req: Request) {
         };
         const validate = userSchema.safeParse(data);
         if (!validate.success) {
-            return NextResponse.json({
-                error: 'Validation error',
-                details: validate.error,
-            }, { status: 400 });
+            throw new Error(JSON.stringify({
+                type: 'ValidationError',
+                details: validate.error.message,
+            }))
         }
 
         const addressInfo = await prisma.address.create({
